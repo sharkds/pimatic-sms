@@ -1,29 +1,43 @@
-# pimatic-slack
+# pimatic-sms
 
-Slack Integration with [Pimatic](https://pimatic.org).
+SMS Integration with [Pimatic](https://pimatic.org). Additional providers can easily be supported, for now it just supports [Twilio](https://www.twilio.com/).
 
 
 ## Plugin Configuration
 
-You can load the plugin by editing your `config.json` in the `plugins` Array to include:
+You can load the backend by editing your `config.json` to include:
 
 ```json
 {
-   "plugin": "slack",
-   "apiKey": "YOUR_SLACK_BOT_API_KEY"
+   "plugin": "sms",
+   "provider": "twilio",
+   "fromNumber": "+112345689"
 }
 ```
 
-You can also add the following optional values
+Depending on which provider you pick (Currently only twilio is supported), you will need to provide some additional properties. You can see all available properties by looking at [sms-config-schema](sms-config-schema.coffee).
+
+If using twilio you will need to supply these additional properties:
+
 ```json
 {
-   "channelId": "SOME_DEFUALT_CHANNEL_ID"
+   "twilioSid": "YOUR_TWILLIO_ACCOUNT_SID",
+   "twilioAuthToken": "YOUR_TWILLIO_AUTH_TOKEN"
 }
 ```
+
+## Example
+
+It can be used like any normal Pimatic rule
+
+- if it is 08:00 send sms message "Good morning!" to number "+1888123456"
+- if X then send sms message "X Happened" to number "+1888123456"
 
 ## TODO
 
-- Handle incoming questions
+- Add [Plivo](https://www.plivo.com) SMS Provider.
+- Add [Sinch](https://www.sinch.com) SMS Provider.
+- Add [Nexmo](https://www.nexmo.com) SMS Provider.
 
 ## Contributing
 
