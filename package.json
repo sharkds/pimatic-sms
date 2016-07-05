@@ -26,6 +26,7 @@
   "author": "Andy Savage <andy@savage.hk>",
   "license": "MIT",
   "dependencies": {
+    "node-phonenumber": "^0.2.3",
     "twilio": "^2.9.1"
   }
 }

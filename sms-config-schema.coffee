@@ -28,4 +28,8 @@ module.exports = {
       description: "Default number to send SMS messages to"
       type: "string"
       default: ""
+    numberFormatCountry:
+      description: "Country code to format numbers in. This helps us to format numbers correctly incase country code is not passed. You can still override it without a country code, but allows you to write numbers with a default country code for convenience."
+      type: "string"
+      default: "US"
 }

@@ -10,6 +10,10 @@ module.exports = (env) ->
   #util = env.require 'util'
   M = env.matcher
 
+  # Load our extra libraries
+  phone = require('node-phonenumber')
+  phoneUtil = phone.PhoneNumberUtil.getInstance()
+
   # Load all available providers
   providers = {}
   for key, val of require('./providers')
@@ -52,7 +56,7 @@ module.exports = (env) ->
       strToTokens = (str) => ["\"#{str}\""]
 
       textTokens = strToTokens ""
-      toNumberTokens = strToTokens ""
+      toNumberTokens = strToTokens @plugin.config.toNumber || ""
 
       setText = (m, tokens) => textTokens = tokens
       setToNumber = (m, tokens) => toNumberTokens = tokens
@@ -62,13 +66,12 @@ module.exports = (env) ->
         .match(['sms ','text '])
         .match(['message '], optional: yes)
         .matchStringWithVars(setText)
-        .match([' to number ',' to phone '])
-        .matchStringWithVars(setToNumber)
 
-      # next = m.match([' ignore',' no unfurl',' do not unfurl']).match([' links'])
-      # if next.hadMatch()
-      #   unfurlLinks = false
-      #   m = next
+      if @plugin.config.toNumber?
+        next = m.match([' to number ',' to phone ']).matchStringWithVars(setToNumber)
+        if next.hadMatch() then m = next
+      else
+        m.match([' to number ',' to phone ']).matchStringWithVars(setToNumber)
 
       if m.hadMatch()
         match = m.getFullMatch()
@@ -80,7 +83,7 @@ module.exports = (env) ->
           token: match
           nextInput: input.substring(match.length)
           actionHandler: new SMSActionHandler(
-            @framework, textTokens, toNumberTokens, @plugin.sendSMSMessage
+            @framework, textTokens, toNumberTokens, @plugin.sendSMSMessage, @plugin.config.numberFormatCountry
           )
         }
 
@@ -88,7 +91,7 @@ module.exports = (env) ->
 
   class SMSActionHandler extends env.actions.ActionHandler
 
-    constructor: (@framework, @textTokens, @toNumberTokens, @sendSMSMessage) ->
+    constructor: (@framework, @textTokens, @toNumberTokens, @sendSMSMessage, @numberFormatCountry) ->
       return
 
     executeAction: (simulate, context) ->
@@ -103,13 +106,17 @@ module.exports = (env) ->
           # if toNumber is ""
           #   return reject(__("No Text Specified to post! Ignoring"))
 
+          formattedToNumber = phoneUtil.format(phoneUtil.parse(toNumber,@numberFormatCountry), phone.PhoneNumberFormat.E164);
+
           if simulate
-            return resolve(__("Would Post to Slack '#{text}' to channel '#{channel}'"))
+            return resolve(__("Would send SMS #{message} to #{toNumber}"))
           else
-            return @sendSMSMessage(toNumber, text).then( (message) ->
+            return @sendSMSMessage(formattedToNumber, text).then( (message) ->
               if (message.price is null)
+                env.logger.debug "SMS sent to #{message.to} for free!"
                 resolve __("SMS sent to #{message.to} for free!")
               else
+                env.logger.debug "SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}"
                 resolve __("SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}")
             )
         )
