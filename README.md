@@ -11,20 +11,22 @@ You can load the backend by editing your `config.json` to include:
 {
    "plugin": "sms",
    "provider": "twilio",
-   "fromNumber": "+112345689"
-}
-```
-
-Depending on which provider you pick (Currently only twilio is supported), you will need to provide some additional properties. You can see all available properties by looking at [sms-config-schema](sms-config-schema.coffee).
-
-If using twilio you will need to supply these additional properties:
-
-```json
-{
+   "fromNumber": "+112345689",
    "twilioSid": "YOUR_TWILLIO_ACCOUNT_SID",
    "twilioAuthToken": "YOUR_TWILLIO_AUTH_TOKEN"
 }
 ```
+
+If you didn't want to specify the "to number" in every rule, you could set a global number in the config:
+
+```json
+{
+  "toNumber": "+81239529"
+}
+
+__Note: Even when this is set, it can still be overridden for each rule if needed.__
+
+Depending on which provider you pick you will need to provide some additional properties as seen above with twilio*. You can see all available properties by looking at [sms-config-schema](sms-config-schema.coffee).
 
 ## Example
 
@@ -33,11 +35,30 @@ It can be used like any normal Pimatic rule
 - if it is 08:00 send sms message "Good morning!" to number "+1888123456"
 - if X then send sms message "X Happened" to number "+1888123456"
 
+If you want to add a button in the interface just to trigger an SMS, you could add it in the 'devices' section of `config.json` like so:
+
+```json
+{
+  "id": "dummy-buttons",
+  "name": "Dummy Buttons",
+  "class": "ButtonsDevice",
+  "buttons": [
+    {
+      "id": "button1",
+      "text": "Send an SMS Message"
+    }
+  ]
+}
+```
+
+Then you would add a rule
+`when "button1" is pressed then send sms message "Good morning!" to number "+1888123456"`
+
 ## TODO
 
-- Add [Plivo](https://www.plivo.com) SMS Provider.
-- Add [Sinch](https://www.sinch.com) SMS Provider.
-- Add [Nexmo](https://www.nexmo.com) SMS Provider.
+- Add [Plivo SMS Provider](https://www.plivo.com)
+- Add [Sinch SMS Provider](https://www.sinch.com)
+- Add [Nexmo SMS Provider](https://www.nexmo.com)
 
 ## Contributing
 

@@ -12,7 +12,7 @@ module.exports = {
       type: "string"
       default: "twilio"
       enum: ["twilio"]
-    twilioSid:
+    twilioAccountSid:
       description: "Account Sid for Twilio"
       type: "string"
       default: ""
@@ -22,6 +22,10 @@ module.exports = {
       default: ""
     fromNumber:
       description: "Number to send SMS from"
+      type: "string"
+      default: ""
+    toNumber:
+      description: "Default number to send SMS messages to"
       type: "string"
       default: ""
 }

@@ -11,9 +11,9 @@ module.exports = (env) ->
   M = env.matcher
 
   # Load all available providers
-  @providers = {}
+  providers = {}
   for key, val of require('./providers')
-    @providers[key] = val
+    providers[key] = val
 
   # SMS Plugin
   class SMSPlugin extends env.plugins.Plugin
@@ -27,11 +27,11 @@ module.exports = (env) ->
           reject('No Valid Provider Specified')
 
       # ADD SMS PROVIDER CONFIG HERE
-      if @config.provider is "twilio" and @providers.hasOwnProperty 'twilio'
+      if @config.provider is "twilio" and providers.hasOwnProperty 'twilio'
         if (@config.twilioAccountSid? is "" or @config.twilioAuthToken is "")
           return env.logging.error "We need AccountSid and AuthToken when using provider 'twilio'"
         else
-          @sendSMSMessage = @providers['twilio'](Promise, {
+          @sendSMSMessage = providers['twilio'](Promise, {
             accountSid: @config.twilioAccountSid,
             authToken: @config.twilioAuthToken,
             fromNumber: @config.fromNumber
@@ -40,9 +40,9 @@ module.exports = (env) ->
       @framework.ruleManager.addActionProvider(new SMSActionProvider @framework, @)
 
   # Create a instance of my plugin
-  plugin = new SlackPlugin
+  plugin = new SMSPlugin
 
-  class SlackActionProvider extends env.actions.ActionProvider
+  class SMSActionProvider extends env.actions.ActionProvider
 
     constructor: (@framework, @plugin) ->
       return
