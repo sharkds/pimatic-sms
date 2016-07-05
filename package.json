@@ -1,0 +1,31 @@
+{
+  "name": "pimatic-sms",
+  "version": "1.0.0",
+  "description": "Send SMS Messages from Pimatic. Currently supports Twillo as a provider.",
+  "main": "sms",
+  "configSchema": "sms-config-schema.coffee",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "sms.coffee",
+    "sms-config-schema.coffee"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hongkongkiwi/pimatic-sms.git"
+  },
+  "keywords": [
+    "sms",
+    "push message",
+    "pimatic",
+    "home automation"
+  ],
+  "author": "Andy Savage <andy@savage.hk>",
+  "license": "MIT",
+  "dependencies": {
+    "twilio": "^2.9.1"
+  }
+}
