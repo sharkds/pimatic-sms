@@ -58,8 +58,9 @@ module.exports = (env) ->
       setToNumber = (m, tokens) => toNumberTokens = tokens
 
       m = M(input, context)
-        .match(['sms ','text message'])
         .match(['send ','write ','compose '], optional: yes)
+        .match(['sms ','text '])
+        .match(['message '], optional: yes)
         .matchStringWithVars(setText)
         .match([' to number ',' to phone '])
         .matchStringWithVars(setToNumber)
