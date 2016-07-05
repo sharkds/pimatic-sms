@@ -23,6 +23,7 @@ If you didn't want to specify the "to number" in every rule, you could set a glo
 {
   "toNumber": "+81239529"
 }
+```
 
 __Note: Even when this is set, it can still be overridden for each rule if needed.__
 
