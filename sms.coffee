@@ -118,6 +118,8 @@ module.exports = (env) ->
               else
                 env.logger.debug "SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}"
                 resolve __("SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}")
+            , (rejection) ->
+                reject rejection.message
             )
         )
       )
