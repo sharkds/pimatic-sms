@@ -1,6 +1,6 @@
 {
   "name": "pimatic-sms",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Send SMS Messages from Pimatic. Supports lots of different providers.",
   "main": "sms",
   "configSchema": "sms-config-schema.coffee",
@@ -8,7 +8,11 @@
     "README.md",
     "LICENSE",
     "sms.coffee",
-    "sms-config-schema.coffee"
+    "sms-config-schema.coffee",
+    "providers/SMSProvider.coffee",
+    "providers/ThreeHK.coffee",
+    "providers/Twilio.coffee",      
+    "providers/index.coffee"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,6 +23,11 @@
   },
   "keywords": [
     "sms",
+    "twilio",
+    "threehk",
+    "notifications",
+    "push",
+    "alarm",
     "push message",
     "pimatic",
     "home automation"
