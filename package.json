@@ -11,7 +11,7 @@
     "sms-config-schema.coffee",
     "providers/SMSProvider.coffee",
     "providers/ThreeHK.coffee",
-    "providers/Twilio.coffee",      
+    "providers/Twilio.coffee",
     "providers/index.coffee"
   ],
   "scripts": {
@@ -35,6 +35,7 @@
   "author": "Andy Savage <andy@savage.hk>",
   "license": "MIT",
   "dependencies": {
+    "debug": "^2.2.0",
     "node-phonenumber": "^0.2.3",
     "request-promise": "^3.0.0",
     "twilio": "^2.9.1",
