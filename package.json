@@ -1,7 +1,7 @@
 {
   "name": "pimatic-sms",
-  "version": "1.0.1",
-  "description": "Send SMS Messages from Pimatic. Currently supports Twillo as a provider.",
+  "version": "1.0.2",
+  "description": "Send SMS Messages from Pimatic. Supports lots of different providers.",
   "main": "sms",
   "configSchema": "sms-config-schema.coffee",
   "files": [
