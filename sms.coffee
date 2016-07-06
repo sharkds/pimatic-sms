@@ -14,34 +14,50 @@ module.exports = (env) ->
   phone = require('node-phonenumber')
   phoneUtil = phone.PhoneNumberUtil.getInstance()
 
-  # Load all available providers
-  providers = {}
-  for key, val of require('./providers')
-    providers[key] = val
-
   # SMS Plugin
   class SMSPlugin extends env.plugins.Plugin
 
     # ####init()
     init: (app, @framework, @config) =>
 
-      # Setup a blank method
-      @sendSMSMessage = () ->
-        return new Promise(resolve,reject) ->
-          reject('No Valid Provider Specified')
+      # Load all available providers
+      @providers = {}
+      getClassOf = Function.prototype.call.bind(Object.prototype.toString);
+      SMSProvider = require('./providers/SMSProvider')
+
+      for key, provider of require('./providers')
+        @providers[key] = provider
+
+      if (@providers.length is 0 or @config.provider.length is 0) then throw new Error("No Providers Available!")
 
       # ADD SMS PROVIDER CONFIG HERE
-      if @config.provider is "twilio" and providers.hasOwnProperty 'twilio'
+      if @config.provider is "twilio" and @providers.hasOwnProperty 'twilio'
         if (@config.twilioAccountSid? is "" or @config.twilioAuthToken is "")
           return env.logging.error "We need AccountSid and AuthToken when using provider 'twilio'"
         else
-          @sendSMSMessage = providers['twilio'](Promise, {
+          @provider = @providers['twilio'](Promise, {
             accountSid: @config.twilioAccountSid,
             authToken: @config.twilioAuthToken,
             fromNumber: @config.fromNumber
             })
+      else if @config.provider is "threehk" and @providers.hasOwnProperty 'threehk'
+        if (@config.threehkPassword is "")
+          return env.logging.error "We need password when using provider 'threehk'"
+        else
+          mobileLoginNumber = phoneUtil.format(phoneUtil.parse(@config.fromNumber,'HK'), phone.PhoneNumberFormat.NATIONAL).replace(/ /,'').trim();
+          @provider = @providers['threehk'](Promise, {
+            mobileNumber: mobileLoginNumber,
+            password: @config.threehkPassword,
+            })
+      else
+        throw new Error("Invalid Provider Specified!")
 
       @framework.ruleManager.addActionProvider(new SMSActionProvider @framework, @)
+
+    destroy: () =>
+      for key, provider of @providers
+        provider.destroy()
+      super()
 
   # Create a instance of my plugin
   plugin = new SMSPlugin
@@ -83,7 +99,7 @@ module.exports = (env) ->
           token: match
           nextInput: input.substring(match.length)
           actionHandler: new SMSActionHandler(
-            @framework, textTokens, toNumberTokens, @plugin.sendSMSMessage, @plugin.config.numberFormatCountry
+            @framework, textTokens, toNumberTokens, @plugin.provider, @plugin.config.numberFormatCountry
           )
         }
 
@@ -91,7 +107,7 @@ module.exports = (env) ->
 
   class SMSActionHandler extends env.actions.ActionHandler
 
-    constructor: (@framework, @textTokens, @toNumberTokens, @sendSMSMessage, @numberFormatCountry) ->
+    constructor: (@framework, @textTokens, @toNumberTokens, @provider, @numberFormatCountry) ->
       return
 
     executeAction: (simulate, context) ->
@@ -111,16 +127,20 @@ module.exports = (env) ->
           if simulate
             return resolve(__("Would send SMS #{message} to #{toNumber}"))
           else
-            return @sendSMSMessage(formattedToNumber, text).then( (message) ->
-              if (message.price is null)
-                env.logger.debug "SMS sent to #{message.to} for free!"
-                resolve __("SMS sent to #{message.to} for free!")
-              else
-                env.logger.debug "SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}"
-                resolve __("SMS sent to #{message.to} and cost #{message.price} #{message.price_unit}")
+            return @provider.sendSMSMessage(formattedToNumber, text).then( (message) =>
+                if (@provider.hasPriceInfo)
+                    if (message.price is null)
+                      env.logger.debug "SMS sent to #{toNumber} for free!"
+                      resolve __("SMS sent to #{toNumber} for free!")
+                    else
+                      env.logger.debug "SMS sent to #{toNumber} and cost #{message.price} #{message.price_unit}"
+                      resolve __("SMS sent to #{toNumber} and cost #{message.price} #{message.price_unit}")
+                else
+                    env.logger.debug "SMS sent to #{toNumber}"
+                    resolve __("SMS sent to #{toNumber}")
             , (rejection) ->
-                reject rejection.message
-            )
+              reject rejection.message
+              )
         )
       )
 

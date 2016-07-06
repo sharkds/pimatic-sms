@@ -1,5 +1,4 @@
-twilio = require "./twilio"
-
 module.exports = {
-  twilio: twilio
+  twilio: require "./Twilio"
+  threehk: require "./ThreeHK"
 }

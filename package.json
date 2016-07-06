@@ -27,6 +27,9 @@
   "license": "MIT",
   "dependencies": {
     "node-phonenumber": "^0.2.3",
-    "twilio": "^2.9.1"
+    "request-promise": "^3.0.0",
+    "twilio": "^2.9.1",
+    "underscore": "^1.8.3",
+    "urlencode": "^1.1.0"
   }
 }

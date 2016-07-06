@@ -1,6 +1,6 @@
 # pimatic-sms
 
-SMS Integration with [Pimatic](https://pimatic.org). Additional providers can easily be supported, for now it just supports [Twilio](https://www.twilio.com/).
+SMS Integration with [Pimatic](https://pimatic.org). Supports [Twilio](https://www.twilio.com/) and [ThreeHK](http://www.three.com.hk) but new providers can be added.
 
 
 ## Plugin Configuration
@@ -12,8 +12,6 @@ You can load the backend by editing your `config.json` to include:
    "plugin": "sms",
    "provider": "twilio",
    "fromNumber": "+112345689",
-   "twilioSid": "YOUR_TWILLIO_ACCOUNT_SID",
-   "twilioAuthToken": "YOUR_TWILLIO_AUTH_TOKEN"
 }
 ```
 
@@ -25,9 +23,38 @@ If you didn't want to specify the "to number" in every rule, you could set a glo
 }
 ```
 
-__Note: Even when this is set, it can still be overridden for each rule if needed.__
+_Note: Even when this is set, it can still be overridden for each rule if needed._
+
+### Provider Configuration
+
+Each provider requires different fields in the plugin config
+
+__Twilio__
+
+```json
+{
+  "twilioSid": "YOUR_TWILLIO_ACCOUNT_SID",
+  "twilioAuthToken": "YOUR_TWILLIO_AUTH_TOKEN"
+}
+```
+
+__ThreeHK__
+
+```json
+{
+  "threehkPassword": "YOUR_PASSWORD"
+}
+```
+
+_Note: Uses the fromNumber as your login number so only password is required_
 
 Depending on which provider you pick you will need to provide some additional properties as seen above with twilio*. You can see all available properties by looking at [sms-config-schema](sms-config-schema.coffee).
+
+#### SMS Provider Pricing
+
+Each provider has different pricing, it's up to you to handle this! Some providers might be free depending on the from/to number.
+
+Check with each company for a detailed analysis of their pricing. Most are setup in a pre-pay type arrangement, so you can keep an eye on your budget.
 
 ## Example
 
