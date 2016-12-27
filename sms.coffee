@@ -33,7 +33,7 @@ module.exports = (env) ->
       # ADD SMS PROVIDER CONFIG HERE
       if @config.provider is "twilio" and @providers.hasOwnProperty 'twilio'
         if (@config.twilioAccountSid? is "" or @config.twilioAuthToken is "")
-          return env.logging.error "We need AccountSid and AuthToken when using provider 'twilio'"
+          return env.logger.error "We need AccountSid and AuthToken when using provider 'twilio'"
         else
           @provider = @providers['twilio'](Promise, {
             accountSid: @config.twilioAccountSid,
@@ -42,7 +42,7 @@ module.exports = (env) ->
             })
       else if @config.provider is "threehk" and @providers.hasOwnProperty 'threehk'
         if (@config.threehkPassword is "")
-          return env.logging.error "We need password when using provider 'threehk'"
+          return env.logger.error "We need password when using provider 'threehk'"
         else
           mobileLoginNumber = phoneUtil.format(phoneUtil.parse(@config.fromNumber,'HK'), phone.PhoneNumberFormat.NATIONAL).replace(/ /,'').trim();
           @provider = @providers['threehk'](Promise, {
