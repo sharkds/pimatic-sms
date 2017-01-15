@@ -49,6 +49,15 @@ module.exports = (env) ->
             mobileNumber: mobileLoginNumber,
             password: @config.threehkPassword,
             })
+      else if @config.provider is "epochtasms" and @providers.hasOwnProperty 'epochtasms'
+        if (@config.epochtasmsLogin is "" or @config.epochtasmsPassword is "")
+          return env.logger.error "We need login and password when using provider 'epochtasms'"
+        else
+          @provider = @providers['epochtasms'](Promise, {
+            fromNumber: @config.fromNumber,
+            login: @config.epochtasmsLogin,
+            password: @config.epochtasmsPassword,
+            })
       else
         throw new Error("Invalid Provider Specified!")
 
@@ -122,22 +131,25 @@ module.exports = (env) ->
           # if toNumber is ""
           #   return reject(__("No Text Specified to post! Ignoring"))
 
-          formattedToNumber = phoneUtil.format(phoneUtil.parse(toNumber,@numberFormatCountry), phone.PhoneNumberFormat.E164);
+          if @numberFormatCountry
+            formattedToNumber = phoneUtil.format(phoneUtil.parse(toNumber,@numberFormatCountry), phone.PhoneNumberFormat.E164);
+          else
+            formattedToNumber = toNumber
 
           if simulate
-            return resolve(__("Would send SMS #{message} to #{toNumber}"))
+            return resolve(__("Would send SMS #{message} to #{formattedToNumber}"))
           else
             return @provider.sendSMSMessage(formattedToNumber, text).then( (message) =>
                 if (@provider.hasPriceInfo)
                     if (message.price is null)
-                      env.logger.debug "SMS sent to #{toNumber} for free!"
-                      resolve __("SMS sent to #{toNumber} for free!")
+                      env.logger.debug "SMS sent to #{formattedToNumber} for free!"
+                      resolve __("SMS sent to #{formattedToNumber} for free!")
                     else
-                      env.logger.debug "SMS sent to #{toNumber} and cost #{message.price} #{message.price_unit}"
-                      resolve __("SMS sent to #{toNumber} and cost #{message.price} #{message.price_unit}")
+                      env.logger.debug "SMS sent to #{formattedToNumber} and cost #{message.price} #{message.price_unit}"
+                      resolve __("SMS sent to #{formattedToNumber} and cost #{message.price} #{message.price_unit}")
                 else
-                    env.logger.debug "SMS sent to #{toNumber}"
-                    resolve __("SMS sent to #{toNumber}")
+                    env.logger.debug "SMS sent to #{formattedToNumber}"
+                    resolve __("SMS sent to #{formattedToNumber}")
             , (rejection) ->
               reject rejection.message
               )

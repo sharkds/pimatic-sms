@@ -1,6 +1,6 @@
 {
   "name": "pimatic-sms",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Send SMS Messages from Pimatic. Supports lots of different providers.",
   "main": "sms",
   "configSchema": "sms-config-schema.coffee",
@@ -12,6 +12,7 @@
     "providers/SMSProvider.coffee",
     "providers/ThreeHK.coffee",
     "providers/Twilio.coffee",
+    "providers/ePochtaSMS.coffee",
     "providers/index.coffee"
   ],
   "scripts": {
@@ -25,6 +26,7 @@
     "sms",
     "twilio",
     "threehk",
+    "epochtasms",
     "notifications",
     "push",
     "alarm",
